@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+  </head>
+  <style>
+    body {
+      background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20201012/pngtree-white-cloud-on-blue-sky-weather-background-image_410050.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+  </style>
+
+  <body>
+    <div class="container">
+      <h1>Weather App</h1>
+      <table class="centerContainer">
+        <tr>
+          <td>
+            <label id="cityLabel" for="cityNameTextField" style="color: black">Enter a city:</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input id="cityNameTextField" type="text" name="cityName" />
+            <input
+              id="submitButton"
+              type="button"
+              value="Submit"
+              onclick="SubmitAction()"
+            />
+          </td>
+        </tr>
+      </table>
+      <div class="spacer"></div>
+        <div id="errorMessageComponent" style="display: none; color: red"></div>
+          <div style="display: none" class="spinner spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <div id="weatherInfoComponent" style="display: none">
+            <table width="60%" class="centerContainer" cellpadding="5px">
+              <tr>
+                <th>Temperature</th>
+                <td id="temperatureField">0</td>
+              </tr>
+              <tr>
+                <th>Feels Like</th>
+                <td id="feelsLikeField">0</td>
+              </tr>
+              <tr>
+                <th>Humidity</th>
+                <td id="humidityField">0</td>
+              </tr>
+              <tr>
+                <th>Atmospheric Pressure</th>
+                <td id="pressureField">0</td>
+              </tr>
+          </table>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script 
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" 
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" 
+      crossorigin="anonymous">
+    </script>
+    <script 
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" 
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" 
+      crossorigin="anonymous">
+    </script>
+
+    <script>
+      // JQuery Syntax
+      const cityElementJQuery = $("#cityNameTextField");
+
+      //CSS Function
+      async function SubmitAction(){
+        $(".spinner").css("display","block");
+        $("#errorMessageComponent").css("display", "block");
+        $("#errorMessageComponent").html("");
+        console.log(cityElementJQuery.val());
+        const APIKEY = "f1ebc351be5bdbb4bca552d384e79b1b";
+        const citName = cityElementJQuery.val();
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${citName}&appid=${APIKEY}&units=metric`;
+        const response = await fetch(url);
+
+        console.log(response.status);
+
+        if(response.status === 200){
+          console.log("Request Success");
+          const weatherData = await response.json();
+          console.log(weatherData);
+          $("#temperatureField").html(weatherData.main.temp + "°C");
+          $("#feelsLikeField").html(weatherData.main.feels_like + "°C");
+          $("#humidityField").html(weatherData.main.humidity + "%");
+          $("#pressureField").html(weatherData.main.pressure + " hPa");
+          $("#weatherInfoComponent").css("display", "block");
+          $(".spinner").css("display","none");
+        } else if (response.status === 404) {
+          // City not found handling
+          $("#weatherInfoComponent").css("display", "none");
+          $("#errorMessageComponent").css("display", "block");
+          $("#errorMessageComponent").html("Invalid City");
+          $(".spinner").css("display","none");
+        } else {
+          console.log(response.status);
+          $(".spinner").css("display","none");
+        }
+      }
+      
+      
+    </script>
+  </body>
+
+
+  
+</html>
